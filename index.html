@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Derm Shop</title>
+<style>
+  :root { --b:#111; --g:#f5f5f5; --bd:#ddd; }
+  body { font-family: system-ui, Arial, sans-serif; margin: 16px; background: #fff; color: var(--b); }
+  h1,h2 { margin: 8px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 12px; }
+  .card { border:1px solid var(--bd); border-radius:12px; padding:12px; background:#fff; display:flex; flex-direction:column; gap:8px; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .muted { color:#666; font-size:12px; }
+  img.item { width:100%; height:140px; object-fit:contain; background:var(--g); border:1px solid var(--bd); border-radius:8px; }
+  input,textarea,button,select { font: inherit; padding:8px; border:1px solid var(--bd); border-radius:8px; width:100%; box-sizing:border-box; }
+  button { background:#111; color:#fff; cursor:pointer; }
+  button.secondary { background:#fff; color:#111; border:1px solid #111; }
+  .cart { margin-top: 8px; }
+  table { width:100%; border-collapse: collapse; margin-top:8px; }
+  th, td { border:1px solid var(--bd); padding:8px; text-align:left; font-size:14px; }
+  tfoot td { font-weight: bold; }
+  .two { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  @media (max-width:720px){ .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <h1>Dermatology Shop</h1>
+
+  <div class="grid" id="items"></div>
+
+  <h2>Customer</h2>
+  <div class="two">
+    <div><input id="name" placeholder="Full name" autocomplete="name"></div>
+    <div><input id="phone" placeholder="Phone" autocomplete="tel"></div>
+    <div><input id="email" type="email" placeholder="Email" autocomplete="email"></div>
+    <div><input id="addr" placeholder="Address"></div>
+  </div>
+
+  <div class="cart" id="cartBox" style="display:none">
+    <h2>Cart</h2>
+    <div id="cartTable"></div>
+    <div class="two">
+      <button id="placeOrder">Place order</button>
+      <button class="secondary" id="clearCart">Clear cart</button>
+    </div>
+  </div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbyS4ei1Nnd2N8A3W6_hhmNVc0Q4RwpJ5YK0oGAv-2c4BhIDXcCAn0kO0x1GCtrNT3cJ/exec'; // e.g. https://script.google.com/macros/s/AKfycb.../exec
+const cart = new Map(); // sku -> {sku,name,price,qty}
+
+function money(n){ return 'NPR ' + Number(n).toFixed(2); }
+
+async function loadInventory(){
+  const res = await fetch(API + '?action=inventory', { method: 'GET' });
+  const items = await res.json();
+  const box = document.getElementById('items');
+  box.innerHTML = '';
+  items.forEach(it => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = `
+      <img class="item" src="${escapeHtml(it.image||'')}" alt="${escapeHtml(it.name)}">
+      <div class="row"><b>${escapeHtml(it.name)}</b><span>${money(it.price)}</span></div>
+      <div class="row muted"><span>SKU ${escapeHtml(it.sku)}</span><span>Stock ${it.stock}</span></div>
+      <div class="row">
+        <input type="number" min="1" max="${it.stock}" value="1" id="q_${it.sku}">
+        <button data-sku="${it.sku}">Add</button>
+      </div>`;
+    c.querySelector('button').onclick = () => {
+      const q = Math.max(1, Math.min(Number(document.getElementById('q_'+it.sku).value||1), Number(it.stock)));
+      const prev = cart.get(it.sku)?.qty || 0;
+      cart.set(it.sku, { sku: it.sku, name: it.name, price: it.price, qty: prev + q });
+      renderCart();
+      alert('Added to cart');
+    };
+    box.appendChild(c);
+  });
+}
+
+function renderCart(){
+  const cartBox = document.getElementById('cartBox');
+  if(cart.size === 0){ cartBox.style.display = 'none'; document.getElementById('cartTable').innerHTML = ''; return; }
+  cartBox.style.display = 'block';
+  let rows = '';
+  let total = 0;
+  for(const item of cart.values()){
+    const line = item.qty * item.price;
+    total += line;
+    rows += `
+      <tr>
+        <td>${escapeHtml(item.sku)}</td>
+        <td>${escapeHtml(item.name)}</td>
+        <td style="text-align:right">${money(item.price)}</td>
+        <td style="text-align:right">
+          <input type="number" min="1" value="${item.qty}" data-sku="${item.sku}" class="qty">
+        </td>
+        <td style="text-align:right">${money(line)}</td>
+        <td style="text-align:right"><button class="secondary rm" data-sku="${item.sku}">Remove</button></td>
+      </tr>`;
+  }
+  document.getElementById('cartTable').innerHTML = `
+    <table>
+      <thead><tr><th>SKU</th><th>Name</th><th>Price</th><th>Qty</th><th>Line</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="4" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td><td></td></tr></tfoot>
+    </table>`;
+  // bind qty and remove
+  document.querySelectorAll('.qty').forEach(inp=>{
+    inp.onchange = () => {
+      const sku = inp.getAttribute('data-sku');
+      const it = cart.get(sku);
+      const q = Math.max(1, Number(inp.value||1));
+      it.qty = q;
+      cart.set(sku, it);
+      renderCart();
+    };
+  });
+  document.querySelectorAll('.rm').forEach(btn=>{
+    btn.onclick = () => { cart.delete(btn.getAttribute('data-sku')); renderCart(); };
+  });
+}
+
+async function placeOrder(){
+  const customer = {
+    name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    address: document.getElementById('addr').value.trim()
+  };
+  if(!customer.name || !customer.phone || !customer.email || !customer.address){ alert('All customer fields are required'); return; }
+  if(!/^\S+@\S+\.\S+$/.test(customer.email)){ alert('Enter a valid email'); return; }
+  if(!/^[0-9+()\-\s]{8,}$/.test(customer.phone)){ alert('Enter a valid phone'); return; }
+
+  const items = [...cart.values()].map(i => ({ sku: i.sku, qty: i.qty }));
+  if(items.length === 0){ alert('Cart is empty'); return; }
+
+  const payload = { customer, items };
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'order', payload })
+  });
+  const data = await res.json();
+  if(data?.ok){
+    alert('Order placed: ' + data.orderId + '\nA receipt has been emailed.');
+    cart.clear();
+    renderCart();
+    // optionally, clear form
+    ['name','phone','email','addr'].forEach(id => document.getElementById(id).value = '');
+  }else{
+    alert('Order failed: ' + (data?.error || 'Unknown error'));
+  }
+}
+
+document.getElementById('placeOrder').onclick = placeOrder;
+document.getElementById('clearCart').onclick = () => { cart.clear(); renderCart(); };
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+loadInventory();
+</script>
+</body>
+</html>
