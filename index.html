@@ -13,7 +13,6 @@
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}
   a{color:inherit}
-  /* Header */
   header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--bd);z-index:40}
   .wrap{max-width:1100px;margin:0 auto;padding:12px}
   .row{display:flex;align-items:center;gap:12px}
@@ -26,13 +25,10 @@
   button{cursor:pointer}
   .btn{background:var(--brand);color:#fff;border:none}
   .btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--ink)}
-  /* Toolbar */
   .toolbar{gap:10px;margin-top:8px}
   .search{flex:1}
-  /* Layout */
   main{max-width:1100px;margin:0 auto;padding:12px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-  /* Cards */
   .card{border:1px solid var(--bd);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;position:relative;background:#fff}
   .card:hover{box-shadow:0 6px 24px rgba(0,0,0,.06)}
   .badge{position:absolute;top:8px;left:8px;background:#111;color:#fff;border-radius:999px;font-size:12px;padding:4px 8px}
@@ -42,7 +38,6 @@
   .stepper{display:flex;align-items:center;gap:6px}
   .stepper button{width:36px}
   .stepper input{width:70px;text-align:center}
-  /* FAB + Drawer */
   .fab{position:fixed;right:16px;bottom:16px;border-radius:999px;padding:12px 16px;background:#111;color:#fff;border:none;z-index:50;display:none}
   .drawer{position:fixed;right:0;top:0;height:100%;width:380px;max-width:92vw;background:#fff;box-shadow:-2px 0 26px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s ease;z-index:60;display:flex;flex-direction:column}
   .drawer.open{transform:translateX(0)}
@@ -53,38 +48,19 @@
   th,td{border-bottom:1px solid var(--bd);padding:8px;text-align:left}
   tfoot td{font-weight:600}
   .rm{color:#111;border:1px solid #111;background:#fff;border-radius:8px;padding:4px 8px;cursor:pointer}
-  /* Screens */
   .screen{display:none}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media (max-width:800px){ .two{grid-template-columns:1fr} }
   .error{border-color:var(--danger)!important}
   .msg{font-size:12px;color:var(--danger);margin-top:6px}
-  /* Toast */
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .25s}
   .toast.show{opacity:1}
-  /* Footer */
   footer{max-width:1100px;margin:20px auto;padding:0 12px 24px;color:var(--muted);font-size:12px}
-  /* Overlay */
   #overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.82);z-index:70;align-items:center;justify-content:center}
   .cardBox{padding:16px 20px;border:1px solid var(--bd);border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-  .loadingBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: var(--muted);
-  }
-  .spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--brand);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
-  }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
+  .loadingBox{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--muted);min-height:200px}
+  .spinner{border:4px solid #f3f3f3;border-top:4px solid var(--brand);border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin-bottom:10px}
+  @keyframes spin{100%{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -101,9 +77,7 @@
       <button id="cartBadge" class="btn" onclick="openDrawer()" style="display:none">Cart • <span id="cartCount">0</span></button>
     </div>
     <div class="row toolbar">
-      <label>Category
-        <select id="category"></select>
-      </label>
+      <label>Category <select id="category"></select></label>
       <input id="search" class="search" placeholder="Search products">
     </div>
   </div>
@@ -113,13 +87,13 @@
   <!-- Screen: Shop -->
   <section id="shop" class="screen">
     <div id="loadingProducts" class="loadingBox">
-    <div class="spinner"></div>
-    <p>Loading products…</p>
+      <div class="spinner"></div>
+      <p>Loading products…</p>
     </div>
     <div id="items" class="grid"></div>
   </section>
 
-  <!-- Screen: Checkout -->
+  <!-- Checkout -->
   <section id="checkout" class="screen">
     <h2>Checkout</h2>
     <div class="two">
@@ -143,7 +117,7 @@
     </div>
   </section>
 
-  <!-- Screen: Confirmation -->
+  <!-- Confirmation -->
   <section id="confirm" class="screen">
     <h2>Order placed</h2>
     <p id="confirmMsg"></p>
@@ -169,7 +143,6 @@
   <p style="margin-top:16px">Privacy: Your name, phone, email, and address are used only to fulfill your order. We don’t sell or share your data.</p>
 </footer>
 
-<!-- Cart FAB and Drawer -->
 <button id="fabCart" class="fab" onclick="openDrawer()">Cart • <span id="fabN">0</span></button>
 <aside id="drawer" class="drawer" aria-label="Cart">
   <header class="wrap row">
@@ -177,9 +150,7 @@
     <div class="grow"></div>
     <button class="btn secondary" onclick="closeDrawer()">Close</button>
   </header>
-  <div class="body">
-    <div id="drawerBody"></div>
-  </div>
+  <div class="body"><div id="drawerBody"></div></div>
   <div class="foot">
     <button class="btn" style="flex:1" onclick="goCheckout()">Checkout</button>
     <button class="btn secondary" style="flex:1" onclick="clearCart()">Clear</button>
@@ -188,7 +159,6 @@
 
 <div id="toast" class="toast">Added to cart</div>
 
-<!-- Processing overlay -->
 <div id="overlay">
   <div class="cardBox">
     <div class="spinner"></div>
@@ -197,241 +167,93 @@
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API = 'https://script.google.com/macros/s/AKfycbwtQ0FM-IdiHvG-ztqaqhuGhbjz-iarv1jH0Pf-L1b2VBoE8xfkFM6_53S9MBCFDmx1nw/exec'; // ends with /exec
+const API = 'https://script.google.com/macros/s/AKfycbwtQ0FM-IdiHvG-ztqaqhuGhbjz-iarv1jH0Pf-L1b2VBoE8xfkFM6_53S9MBCFDmx1nw/exec';
 const CURRENCY = 'NPR';
-
-/* ===== STATE ===== */
 let INVENTORY = [];
-const cart = new Map(); // sku -> {sku,name,price,qty}
+const cart = new Map();
 
-/* ===== UTIL ===== */
 const money = n => `${CURRENCY} ${Number(n).toFixed(2)}`;
-const esc = s => String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1400); }
-function showOverlay(v){ document.getElementById('overlay').style.display = v?'flex':'none'; }
+const esc = s => String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400);}
+function showOverlay(v){document.getElementById('overlay').style.display=v?'flex':'none';}
 
-/* ===== ROUTER ===== */
-function go(route){ location.hash = route; renderRoute(); }
-window.addEventListener('hashchange', renderRoute);
+function go(r){location.hash=r;renderRoute();}
+window.addEventListener('hashchange',renderRoute);
 function renderRoute(){
-  const r = location.hash || '#/shop';
-  show('shop', r==='#/shop');
-  show('checkout', r==='#/checkout');
-  show('confirm', r==='#/confirm');
-  if(r==='#/checkout') renderCheckout();
+  const r=location.hash||'#/shop';
+  show('shop',r==='#/shop');show('checkout',r==='#/checkout');show('confirm',r==='#/confirm');
+  if(r==='#/checkout')renderCheckout();
 }
-function show(id, v){ document.getElementById(id).style.display = v?'block':'none'; }
+function show(id,v){document.getElementById(id).style.display=v?'block':'none';}
 
-/* ===== INVENTORY ===== */
 async function loadInventory(){
-  document.getElementById('loadingProducts').style.display = 'flex';
-  document.getElementById('items').style.display = 'none';
-  try {
-    const res = await fetch(API + '?action=inventory');
-    INVENTORY = await res.json();
+  document.getElementById('loadingProducts').style.display='flex';
+  document.getElementById('items').style.display='none';
+  try{
+    const res=await fetch(API+'?action=inventory');
+    INVENTORY=await res.json();
     buildFilters(INVENTORY);
+    await new Promise(r=>setTimeout(r,100)); // allow spinner to paint
     renderProducts();
-  } finally {
-    document.getElementById('loadingProducts').style.display = 'none';
-    document.getElementById('items').style.display = 'grid';
+  }catch(err){
+    document.getElementById('items').innerHTML='<p style="color:red">Failed to load products</p>';
+    console.error(err);
+  }finally{
+    document.getElementById('loadingProducts').style.display='none';
+    document.getElementById('items').style.display='grid';
   }
 }
+
 function buildFilters(items){
-  const sel = document.getElementById('category');
-  sel.innerHTML = '';
-  const opts = ['All', ...[...new Set(items.map(x=>x.category).filter(Boolean))].sort()];
-  opts.forEach((name,i)=>{
-    const o = document.createElement('option');
-    o.value = i===0 ? '' : name;
-    o.textContent = name;
-    sel.appendChild(o);
-  });
+  const sel=document.getElementById('category');sel.innerHTML='';
+  const opts=['All',...[...new Set(items.map(x=>x.category).filter(Boolean))].sort()];
+  opts.forEach((n,i)=>{const o=document.createElement('option');o.value=i===0?'':n;o.textContent=n;sel.appendChild(o);});
 }
 function filteredInventory(){
-  const cat = document.getElementById('category').value.trim().toLowerCase();
-  const q = document.getElementById('search').value.trim().toLowerCase();
+  const cat=document.getElementById('category').value.trim().toLowerCase();
+  const q=document.getElementById('search').value.trim().toLowerCase();
   return INVENTORY.filter(it=>{
-    const okCat = !cat || (it.category||'').toLowerCase() === cat;
-    const okQ = !q || it.name.toLowerCase().includes(q) || it.sku.toLowerCase().includes(q);
-    return okCat && okQ;
+    const okCat=!cat||(it.category||'').toLowerCase()===cat;
+    const okQ=!q||it.name.toLowerCase().includes(q)||it.sku.toLowerCase().includes(q);
+    return okCat&&okQ;
   });
 }
 function renderProducts(){
-  const box = document.getElementById('items');
-  box.innerHTML = '';
-  const items = filteredInventory();
-  if(items.length===0){ box.innerHTML = '<p style="color:var(--muted)">No products match your filter.</p>'; return; }
+  const box=document.getElementById('items');box.innerHTML='';
+  const items=filteredInventory();
+  if(items.length===0){box.innerHTML='<p style="color:var(--muted)">No products match your filter.</p>';return;}
   items.forEach(it=>{
-    const out = Number(it.stock)<=0;
-    const c = document.createElement('div'); c.className='card';
-    c.innerHTML = `
-      ${out?'<div class="badge">Out of stock</div>':''}
+    const out=Number(it.stock)<=0;
+    const c=document.createElement('div');c.className='card';
+    c.innerHTML=`${out?'<div class="badge">Out of stock</div>':''}
       <img class="img" loading="lazy" src="${esc(it.image||'')}" alt="${esc(it.name)}" onerror="this.style.display='none'">
       <div class="row"><b>${esc(it.name)}</b><span class="price">${money(it.price)}</span></div>
       <div class="row"><span class="sku">SKU ${esc(it.sku)}</span><span class="sku">${esc(it.category||'')}</span></div>
-      <div class="row">
-        <div class="stepper">
-          <button class="minus" data-sku="${it.sku}" ${out?'disabled':''}>−</button>
-          <input id="q_${it.sku}" type="number" value="1" min="1" max="${it.stock}" ${out?'disabled':''}>
-          <button class="plus" data-sku="${it.sku}" ${out?'disabled':''}>+</button>
-        </div>
-        <button class="btn add" data-sku="${it.sku}" ${out?'disabled':''}>Add to cart</button>
-      </div>`;
+      <div class="row"><div class="stepper">
+        <button class="minus" data-sku="${it.sku}" ${out?'disabled':''}>−</button>
+        <input id="q_${it.sku}" type="number" value="1" min="1" max="${it.stock}" ${out?'disabled':''}>
+        <button class="plus" data-sku="${it.sku}" ${out?'disabled':''}>+</button>
+      </div><button class="btn add" data-sku="${it.sku}" ${out?'disabled':''}>Add to cart</button></div>`;
     c.querySelector('.minus')?.addEventListener('click',()=>step(it.sku,-1,it.stock));
     c.querySelector('.plus')?.addEventListener('click',()=>step(it.sku,1,it.stock));
     c.querySelector('.add')?.addEventListener('click',()=>addToCart(it));
     box.appendChild(c);
   });
 }
-function step(sku,delta,max){
-  const el = document.getElementById('q_'+sku);
-  const v = Math.max(1, Math.min((Number(el.value)||1)+delta, Number(max)||999));
-  el.value = v;
-}
-function addToCart(it){
-  const q = Math.max(1, Number(document.getElementById('q_'+it.sku)?.value||1));
-  const prev = cart.get(it.sku)?.qty || 0;
-  cart.set(it.sku, { sku: it.sku, name: it.name, price: it.price, qty: prev+q });
-  syncCartBadges();
-  toast('Added to cart');
-}
+function step(sku,d,max){const el=document.getElementById('q_'+sku);const v=Math.max(1,Math.min((Number(el.value)||1)+d,Number(max)||999));el.value=v;}
+function addToCart(it){const q=Math.max(1,Number(document.getElementById('q_'+it.sku)?.value||1));const prev=cart.get(it.sku)?.qty||0;cart.set(it.sku,{sku:it.sku,name:it.name,price:it.price,qty:prev+q});syncCartBadges();toast('Added to cart');}
 
-/* ===== CART UI ===== */
 function syncCartBadges(){
-  const n = [...cart.values()].reduce((a,b)=>a+b.qty,0);
-  const badge = document.getElementById('cartBadge');
-  const fab = document.getElementById('fabCart');
-  document.getElementById('cartCount').textContent = n;
-  document.getElementById('fabN').textContent = n;
-  badge.style.display = n? 'inline-block':'none';
-  fab.style.display = n? 'inline-block':'none';
-  renderDrawer();
+  const n=[...cart.values()].reduce((a,b)=>a+b.qty,0);
+  const badge=document.getElementById('cartBadge');const fab=document.getElementById('fabCart');
+  document.getElementById('cartCount').textContent=n;document.getElementById('fabN').textContent=n;
+  badge.style.display=n?'inline-block':'none';fab.style.display=n?'inline-block':'none';renderDrawer();
 }
 function renderDrawer(){
-  const body = document.getElementById('drawerBody');
-  if(cart.size===0){ body.innerHTML = '<p style="color:var(--muted)">Your cart is empty.</p>'; return; }
-  let rows = '<table><thead><tr><th>SKU</th><th>Qty</th><th style="text-align:right">Line</th><th></th></tr></thead><tbody>';
-  let total = 0;
-  for(const it of cart.values()){
-    const line = it.qty*it.price; total+=line;
-    rows += `<tr>
-      <td>${esc(it.sku)}</td>
-      <td>
-        <input type="number" min="1" value="${it.qty}" data-sku="${esc(it.sku)}" class="qty" style="width:70px">
-      </td>
-      <td style="text-align:right">${money(line)}</td>
-      <td style="text-align:right"><button class="rm" data-sku="${esc(it.sku)}">Remove</button></td>
-    </tr>`;
-  }
-  rows += `</tbody><tfoot><tr><td colspan="2" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td><td></td></tr></tfoot></table>`;
-  body.innerHTML = rows;
-  body.querySelectorAll('.qty').forEach(inp=>{
-    inp.onchange = ()=>{ const s=inp.dataset.sku; const it=cart.get(s); it.qty=Math.max(1,Number(inp.value||1)); cart.set(s,it); syncCartBadges(); };
-  });
-  body.querySelectorAll('.rm').forEach(btn=>{
-    btn.onclick=()=>{ cart.delete(btn.dataset.sku); syncCartBadges(); };
-  });
-}
-function openDrawer(){ document.getElementById('drawer').classList.add('open'); }
-function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); }
-function clearCart(){ cart.clear(); syncCartBadges(); }
-
-/* ===== CHECKOUT ===== */
-function goCheckout(){
-  closeDrawer();
-  if(cart.size===0){ toast('Cart is empty'); return; }
-  go('#/checkout');
-}
-function renderCheckout(){
-  // summary
-  let rows = '<table><thead><tr><th>SKU</th><th>Name</th><th style="text-align:right">Qty</th><th style="text-align:right">Line</th></tr></thead><tbody>';
-  let total=0;
-  for(const it of cart.values()){
-    const line=it.qty*it.price; total+=line;
-    rows += `<tr><td>${esc(it.sku)}</td><td>${esc(it.name)}</td><td style="text-align:right">${it.qty}</td><td style="text-align:right">${money(line)}</td></tr>`;
-  }
-  rows += `</tbody><tfoot><tr><td colspan="3" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td></tr></tfoot></table>`;
-  document.getElementById('summary').innerHTML = rows;
-}
-function validateForm(){
-  const f = id => document.getElementById(id);
-  const errs = {name:!f('name').value.trim(), addr:!f('addr').value.trim(),
-                email:!/^\S+@\S+\.\S+$/.test(f('email').value.trim()),
-                phone:!/^[0-9+()\-\s]{8,}$/.test(f('phone').value.trim())};
-  ['name','addr','email','phone'].forEach(k=>{
-    f(k).classList.toggle('error', !!errs[k]);
-    document.getElementById('err_'+k)?.style.setProperty('display', errs[k]?'block':'none');
-  });
-  return !Object.values(errs).some(Boolean);
-}
-
-// POST helper without custom headers to avoid preflight; with timeout and one retry
-async function postWithTimeout(url, body, ms){
-  const ctrl = new AbortController();
-  const t = setTimeout(()=>ctrl.abort(new Error('Timeout')), ms);
-  try{
-    const res = await fetch(url, { method:'POST', body: JSON.stringify(body), signal: ctrl.signal });
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    return await res.json();
-  }catch(e){
-    // quick retry
-    const res = await fetch(url, { method:'POST', body: JSON.stringify(body) });
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    return await res.json();
-  }finally{
-    clearTimeout(t);
-  }
-}
-
-async function placeOrder(){
-  if(cart.size===0){ toast('Cart is empty'); return; }
-  if(!validateForm()) return;
-
-  const btn = document.getElementById('btnPlace');
-  btn.disabled = true; btn.textContent = 'Processing…';
-  showOverlay(true);
-
-  // idempotency token
-  const token = (crypto.randomUUID?.() ? crypto.randomUUID() : (Date.now()+'_'+Math.random().toString(36).slice(2)));
-
-  const customer = {
-    name: document.getElementById('name').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    address: document.getElementById('addr').value.trim(),
-    notes: document.getElementById('notes').value.trim()
-  };
-  const items = [...cart.values()].map(i=>({sku:i.sku, qty:i.qty}));
-
-  const payload = { action:'order', payload:{ token, customer, items } };
-
-  try{
-    const data = await postWithTimeout(API, payload, 20000);
-    if(!data?.ok) throw new Error(data?.error || 'Unknown error');
-
-    document.getElementById('confirmMsg').textContent =
-      `Order ${data.orderId} placed${data.duplicate?' (duplicate ignored)':''}. Total ${CURRENCY} ${Number(data.subtotal).toFixed(2)}.`;
-    document.getElementById('confirmTable').innerHTML = document.getElementById('summary').innerHTML;
-
-    cart.clear(); syncCartBadges();
-    ['name','phone','email','addr','notes'].forEach(id=>document.getElementById(id).value='');
-    go('#/confirm');
-  }catch(err){
-    alert('Order failed: ' + err.message);
-  }finally{
-    showOverlay(false);
-    btn.disabled = false; btn.textContent = 'Place order';
-  }
-}
-
-/* ===== EVENTS ===== */
-document.getElementById('category').addEventListener('change', renderProducts);
-document.getElementById('search').addEventListener('input', renderProducts);
-document.getElementById('btnPlace').addEventListener('click', placeOrder);
-
-/* ===== INIT ===== */
-loadInventory().then(()=>{ go('#/shop'); });
-</script>
-</body>
-</html>
+  const body=document.getElementById('drawerBody');
+  if(cart.size===0){body.innerHTML='<p style="color:var(--muted)">Your cart is empty.</p>';return;}
+  let rows='<table><thead><tr><th>SKU</th><th>Qty</th><th style="text-align:right">Line</th><th></th></tr></thead><tbody>';let total=0;
+  for(const it of cart.values()){const line=it.qty*it.price;total+=line;rows+=`<tr><td>${esc(it.sku)}</td><td><input type="number" min="1" value="${it.qty}" data-sku="${esc(it.sku)}" class="qty" style="width:70px"></td><td style="text-align:right">${money(line)}</td><td style="text-align:right"><button class="rm" data-sku="${esc(it.sku)}">Remove</button></td></tr>`;}
+  rows+=`</tbody><tfoot><tr><td colspan="2" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td><td></td></tr></tfoot></table>`;body.innerHTML=rows;
+  body.querySelectorAll('.qty').forEach(inp=>{inp.onchange=()=>{const s=inp.dataset.sku;const it=cart.get(s);it.qty=Math.max(1,Number(inp.value||1));cart.set(s,it);syncCartBadges();};});
+  body.querySelectorAll('.rm
