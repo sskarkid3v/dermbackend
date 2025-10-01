@@ -225,10 +225,17 @@ function show(id, v){ document.getElementById(id).style.display = v?'block':'non
 
 /* ===== INVENTORY ===== */
 async function loadInventory(){
-  const res = await fetch(API + '?action=inventory');
-  INVENTORY = await res.json();
-  buildFilters(INVENTORY);
-  renderProducts();
+  document.getElementById('loadingProducts').style.display = 'flex';
+  document.getElementById('items').style.display = 'none';
+  try {
+    const res = await fetch(API + '?action=inventory');
+    INVENTORY = await res.json();
+    buildFilters(INVENTORY);
+    renderProducts();
+  } finally {
+    document.getElementById('loadingProducts').style.display = 'none';
+    document.getElementById('items').style.display = 'grid';
+  }
 }
 function buildFilters(items){
   const sel = document.getElementById('category');
