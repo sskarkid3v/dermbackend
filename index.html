@@ -67,14 +67,22 @@
   /* Overlay */
   #overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.82);z-index:70;align-items:center;justify-content:center}
   .cardBox{padding:16px 20px;border:1px solid var(--bd);border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--muted);
+  }
   .spinner {
   border: 4px solid #f3f3f3;
   border-top: 4px solid var(--brand);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
+  margin-bottom: 10px;
   }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
@@ -104,6 +112,10 @@
 <main>
   <!-- Screen: Shop -->
   <section id="shop" class="screen">
+    <div id="loadingProducts" class="loadingBox">
+    <div class="spinner"></div>
+    <p>Loading products…</p>
+    </div>
     <div id="items" class="grid"></div>
   </section>
 
