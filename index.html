@@ -338,9 +338,9 @@ async function placeOrder(){
   const items = [...cart.values()].map(i=>({sku:i.sku, qty:i.qty}));
 
   const res = await fetch(API, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'order', payload:{ customer, items } })
+  method: 'POST',
+  // no headers → stays a simple request
+  body: JSON.stringify({ action:'order', payload:{ customer, items } })
   });
   const data = await res.json();
   if(!data?.ok){ alert('Order failed: ' + (data?.error||'Unknown error')); return; }
