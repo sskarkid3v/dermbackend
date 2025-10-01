@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dermatology Shop</title>
+<title>The Skin Studio Biratnagar Shop</title>
 <link rel="icon" href="images/favicon.ico">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -64,6 +64,9 @@
   .toast.show{opacity:1}
   /* Footer */
   footer{max-width:1100px;margin:20px auto;padding:0 12px 24px;color:var(--muted);font-size:12px}
+  /* Overlay */
+  #overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.82);z-index:70;align-items:center;justify-content:center}
+  .cardBox{padding:16px 20px;border:1px solid var(--bd);border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08)}
 </style>
 </head>
 <body>
@@ -163,9 +166,14 @@
 
 <div id="toast" class="toast">Added to cart</div>
 
+<!-- Processing overlay -->
+<div id="overlay">
+  <div class="cardBox">Processing your order…</div>
+</div>
+
 <script>
 /* ===== CONFIG ===== */
-const API = 'https://script.google.com/macros/s/AKfycbzzNZWZNol8M63BDYoEUKAwIWhbJ5d3p0nNj-txfokv0GQ6SALNjRb6X324ASzMfvKN/exec'; // ends with /exec
+const API = 'https://script.google.com/macros/s/AKfycbwtQ0FM-IdiHvG-ztqaqhuGhbjz-iarv1jH0Pf-L1b2VBoE8xfkFM6_53S9MBCFDmx1nw/exec'; // ends with /exec
 const CURRENCY = 'NPR';
 
 /* ===== STATE ===== */
@@ -176,6 +184,7 @@ const cart = new Map(); // sku -> {sku,name,price,qty}
 const money = n => `${CURRENCY} ${Number(n).toFixed(2)}`;
 const esc = s => String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1400); }
+function showOverlay(v){ document.getElementById('overlay').style.display = v?'flex':'none'; }
 
 /* ===== ROUTER ===== */
 function go(route){ location.hash = route; renderRoute(); }
@@ -324,37 +333,64 @@ function validateForm(){
   });
   return !Object.values(errs).some(Boolean);
 }
+
+// POST helper without custom headers to avoid preflight; with timeout and one retry
+async function postWithTimeout(url, body, ms){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(new Error('Timeout')), ms);
+  try{
+    const res = await fetch(url, { method:'POST', body: JSON.stringify(body), signal: ctrl.signal });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  }catch(e){
+    // quick retry
+    const res = await fetch(url, { method:'POST', body: JSON.stringify(body) });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  }finally{
+    clearTimeout(t);
+  }
+}
+
 async function placeOrder(){
   if(cart.size===0){ toast('Cart is empty'); return; }
   if(!validateForm()) return;
+
+  const btn = document.getElementById('btnPlace');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  showOverlay(true);
+
+  // idempotency token
+  const token = (crypto.randomUUID?.() ? crypto.randomUUID() : (Date.now()+'_'+Math.random().toString(36).slice(2)));
 
   const customer = {
     name: document.getElementById('name').value.trim(),
     phone: document.getElementById('phone').value.trim(),
     email: document.getElementById('email').value.trim(),
     address: document.getElementById('addr').value.trim(),
-    notes: document.getElementById('notes').value.trim() // optional; backend may ignore
+    notes: document.getElementById('notes').value.trim()
   };
   const items = [...cart.values()].map(i=>({sku:i.sku, qty:i.qty}));
 
-  const res = await fetch(API, {
-  method: 'POST',
-  // no headers → stays a simple request
-  body: JSON.stringify({ action:'order', payload:{ customer, items } })
-  });
-  const data = await res.json();
-  if(!data?.ok){ alert('Order failed: ' + (data?.error||'Unknown error')); return; }
+  const payload = { action:'order', payload:{ token, customer, items } };
 
-  // confirmation
-  document.getElementById('confirmMsg').textContent =
-    `Order ${data.orderId} placed successfully. Total ${CURRENCY} ${Number(data.subtotal).toFixed(2)}.`;
-  // reuse checkout summary for confirm
-  document.getElementById('confirmTable').innerHTML = document.getElementById('summary').innerHTML;
+  try{
+    const data = await postWithTimeout(API, payload, 20000);
+    if(!data?.ok) throw new Error(data?.error || 'Unknown error');
 
-  cart.clear(); syncCartBadges();
-  // reset form
-  ['name','phone','email','addr','notes'].forEach(id=>document.getElementById(id).value='');
-  go('#/confirm');
+    document.getElementById('confirmMsg').textContent =
+      `Order ${data.orderId} placed${data.duplicate?' (duplicate ignored)':''}. Total ${CURRENCY} ${Number(data.subtotal).toFixed(2)}.`;
+    document.getElementById('confirmTable').innerHTML = document.getElementById('summary').innerHTML;
+
+    cart.clear(); syncCartBadges();
+    ['name','phone','email','addr','notes'].forEach(id=>document.getElementById(id).value='');
+    go('#/confirm');
+  }catch(err){
+    alert('Order failed: ' + err.message);
+  }finally{
+    showOverlay(false);
+    btn.disabled = false; btn.textContent = 'Place order';
+  }
 }
 
 /* ===== EVENTS ===== */
