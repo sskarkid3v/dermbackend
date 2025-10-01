@@ -195,6 +195,7 @@ function show(id,v){const el=document.getElementById(id); if(el) el.style.displa
 
 /* ===== INVENTORY ===== */
 async function loadInventory(){
+  show('shop', true); // make spinner's parent visible
   console.log('Loading inventory…');
   const spinner = document.getElementById('loadingProducts');
   const grid = document.getElementById('items');
@@ -373,7 +374,8 @@ document.getElementById('search').addEventListener('input',renderProducts);
 document.getElementById('btnPlace').addEventListener('click',placeOrder);
 
 /* ===== INIT ===== */
-loadInventory().then(()=>{ go('#/shop'); });
+go('#/shop');
+loadInventory();
 </script>
 </body>
 </html>
