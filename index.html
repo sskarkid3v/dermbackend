@@ -67,6 +67,16 @@
   /* Overlay */
   #overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.82);z-index:70;align-items:center;justify-content:center}
   .cardBox{padding:16px 20px;border:1px solid var(--bd);border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--brand);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+  }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -168,7 +178,10 @@
 
 <!-- Processing overlay -->
 <div id="overlay">
-  <div class="cardBox">Processing your order…</div>
+  <div class="cardBox">
+    <div class="spinner"></div>
+    <p>Placing your order…</p>
+  </div>
 </div>
 
 <script>
