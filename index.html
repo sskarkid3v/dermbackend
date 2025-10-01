@@ -5,120 +5,208 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dermatology Shop</title>
 <link rel="icon" href="images/favicon.ico">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root { --brand:#0b6; --ink:#111; --muted:#666; --bd:#e5e7eb; --bg:#ffffff; --chip:#f3f4f6; }
-  * { box-sizing: border-box; }
-  body { margin:16px; font-family: system-ui, Arial, sans-serif; color: var(--ink); background: var(--bg); }
-  header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-  header img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
-  header h1 { font-size:24px; margin:0; }
-  .toolbar { display:flex; gap:12px; align-items:center; margin: 8px 0 16px; }
-  select, input, textarea, button { padding:10px; border:1px solid var(--bd); border-radius:10px; font:inherit; }
-  button { background: var(--brand); color: #fff; border: 0; cursor: pointer; }
-  button.secondary { background:#fff; color: var(--ink); border:1px solid var(--ink); }
-  .grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
-  .card { border:1px solid var(--bd); border-radius:14px; padding:12px; display:flex; flex-direction:column; gap:8px; position:relative; }
-  .badge { position:absolute; top:8px; left:8px; background:#222; color:#fff; padding:4px 8px; font-size:12px; border-radius:999px; }
-  .price { font-weight:600; }
-  img.item { width:100%; height:150px; object-fit:contain; background:#fff; border:1px solid var(--bd); border-radius:10px; }
-  .row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .muted { color: var(--muted); font-size:12px; }
-  .two { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-  @media (max-width:720px){ .two { grid-template-columns:1fr; } }
-  .section { margin-top:16px; }
-  .error { border-color: #e11d48 !important; }
-  footer { margin-top:24px; font-size:12px; color:var(--muted); }
-  .hidden { display:none; }
-  .pill { background: var(--chip); padding:6px 10px; border-radius:999px; font-size:12px; }
+  :root{--ink:#0f172a;--muted:#64748b;--bd:#e5e7eb;--bg:#ffffff;--brand:#10b981;--chip:#f3f4f6;--danger:#ef4444;}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}
+  a{color:inherit}
+  /* Header */
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--bd);z-index:40}
+  .wrap{max-width:1100px;margin:0 auto;padding:12px}
+  .row{display:flex;align-items:center;gap:12px}
+  .grow{flex:1}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand img{width:36px;height:36px;border-radius:8px;object-fit:cover}
+  h1{font-size:20px;margin:0}
+  select,input,button,textarea{font:inherit;padding:10px;border:1px solid var(--bd);border-radius:10px;background:#fff}
+  input::placeholder,textarea::placeholder{color:#94a3b8}
+  button{cursor:pointer}
+  .btn{background:var(--brand);color:#fff;border:none}
+  .btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+  /* Toolbar */
+  .toolbar{gap:10px;margin-top:8px}
+  .search{flex:1}
+  /* Layout */
+  main{max-width:1100px;margin:0 auto;padding:12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  /* Cards */
+  .card{border:1px solid var(--bd);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;position:relative;background:#fff}
+  .card:hover{box-shadow:0 6px 24px rgba(0,0,0,.06)}
+  .badge{position:absolute;top:8px;left:8px;background:#111;color:#fff;border-radius:999px;font-size:12px;padding:4px 8px}
+  .price{font-weight:600}
+  .sku{color:var(--muted);font-size:12px}
+  .img{width:100%;height:170px;border:1px solid var(--bd);border-radius:10px;object-fit:contain;background:#fff}
+  .stepper{display:flex;align-items:center;gap:6px}
+  .stepper button{width:36px}
+  .stepper input{width:70px;text-align:center}
+  /* FAB + Drawer */
+  .fab{position:fixed;right:16px;bottom:16px;border-radius:999px;padding:12px 16px;background:#111;color:#fff;border:none;z-index:50;display:none}
+  .drawer{position:fixed;right:0;top:0;height:100%;width:380px;max-width:92vw;background:#fff;box-shadow:-2px 0 26px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s ease;z-index:60;display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer header{border-bottom:1px solid var(--bd)}
+  .drawer .body{padding:12px;overflow:auto;flex:1}
+  .drawer .foot{padding:12px;border-top:1px solid var(--bd);display:flex;gap:10px}
+  table{width:100%;border-collapse:collapse}
+  th,td{border-bottom:1px solid var(--bd);padding:8px;text-align:left}
+  tfoot td{font-weight:600}
+  .rm{color:#111;border:1px solid #111;background:#fff;border-radius:8px;padding:4px 8px;cursor:pointer}
+  /* Screens */
+  .screen{display:none}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:800px){ .two{grid-template-columns:1fr} }
+  .error{border-color:var(--danger)!important}
+  .msg{font-size:12px;color:var(--danger);margin-top:6px}
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .toast.show{opacity:1}
+  /* Footer */
+  footer{max-width:1100px;margin:20px auto;padding:0 12px 24px;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
 
 <header>
-  <img src="images/logo.png" alt="Clinic Logo" onerror="this.style.display='none'">
-  <h1>Dermatology Shop</h1>
-  <span id="cartPill" class="pill" style="margin-left:auto;display:none"></span>
+  <div class="wrap">
+    <div class="row">
+      <div class="brand">
+        <img src="images/logo.png" alt="Clinic logo" onerror="this.style.display='none'">
+        <h1>Dermatology Shop</h1>
+      </div>
+      <div class="grow"></div>
+      <button class="btn secondary" onclick="go('#/shop')">Shop</button>
+      <button id="cartBadge" class="btn" onclick="openDrawer()" style="display:none">Cart • <span id="cartCount">0</span></button>
+    </div>
+    <div class="row toolbar">
+      <label>Category
+        <select id="category"></select>
+      </label>
+      <input id="search" class="search" placeholder="Search products">
+    </div>
+  </div>
 </header>
 
-<div class="toolbar">
-  <label>Category
-    <select id="category">
-      <option value="">All</option>
-    </select>
-  </label>
-  <input id="search" placeholder="Search products">
-</div>
+<main>
+  <!-- Screen: Shop -->
+  <section id="shop" class="screen">
+    <div id="items" class="grid"></div>
+  </section>
 
-<div class="grid" id="items"></div>
+  <!-- Screen: Checkout -->
+  <section id="checkout" class="screen">
+    <h2>Checkout</h2>
+    <div class="two">
+      <form id="custForm" novalidate>
+        <label>Name<input id="name" autocomplete="name" required></label>
+        <div id="err_name" class="msg" style="display:none">Enter your name</div>
+        <label>Phone<input id="phone" autocomplete="tel" required></label>
+        <div id="err_phone" class="msg" style="display:none">Enter a valid phone</div>
+        <label>Email<input id="email" type="email" autocomplete="email" required></label>
+        <div id="err_email" class="msg" style="display:none">Enter a valid email</div>
+        <label>Address<input id="addr" autocomplete="street-address" required></label>
+        <div id="err_addr" class="msg" style="display:none">Enter your address</div>
+        <label>Notes (optional)<textarea id="notes" rows="3" placeholder="Delivery instructions"></textarea></label>
+        <button type="button" id="btnPlace" class="btn">Place order</button>
+        <button type="button" class="btn secondary" onclick="go('#/shop')">Back to shop</button>
+      </form>
+      <div>
+        <h3>Order summary</h3>
+        <div id="summary"></div>
+      </div>
+    </div>
+  </section>
 
-<div class="section">
-  <h2>Customer</h2>
-  <div class="two">
-    <input id="name" placeholder="Full name" autocomplete="name">
-    <input id="phone" placeholder="Phone" autocomplete="tel">
-    <input id="email" type="email" placeholder="Email" autocomplete="email">
-    <input id="addr" placeholder="Address">
-  </div>
-</div>
+  <!-- Screen: Confirmation -->
+  <section id="confirm" class="screen">
+    <h2>Order placed</h2>
+    <p id="confirmMsg"></p>
+    <div id="confirmTable"></div>
+    <p style="color:var(--muted)">A receipt has been emailed. For questions call the clinic.</p>
+    <button class="btn secondary" onclick="go('#/shop'); loadInventory()">Continue shopping</button>
+  </section>
+</main>
 
-<div class="section" id="cartBox" style="display:none">
-  <h2>Cart</h2>
-  <div id="cartTable"></div>
-  <div class="two">
-    <button id="placeOrder">Place order</button>
-    <button class="secondary" id="clearCart">Clear cart</button>
-  </div>
-</div>
-
-<!-- Confirmation page -->
-<div class="section hidden" id="confirm">
-  <h2>Order placed</h2>
-  <p id="confirmMsg"></p>
-  <div id="confirmTable"></div>
-  <p class="muted">A receipt has been emailed. For questions call the clinic.</p>
-  <button id="newOrder" class="secondary">Start a new order</button>
-</div>
-
-<hr class="section">
-
-<section class="two">
-  <div>
-    <h3>About</h3>
-    <p>Board-certified dermatologist. Clinic hours: Sun–Fri 10:00–17:00.</p>
-  </div>
-  <div>
-    <h3>Contact</h3>
-    <p>Phone: 01-XXXXXXX<br>Email: clinic@example.com<br>Address: Street, City</p>
-  </div>
-</section>
 <footer>
-  Privacy: Your name, phone, email, and address are used only to fulfill your order. We don’t sell or share your data.
+  <div class="two">
+    <div>
+      <h3>About</h3>
+      Board-certified dermatologist. Clinic hours: Sun–Fri 10:00–17:00.
+    </div>
+    <div>
+      <h3>Contact</h3>
+      Phone: <a href="tel:01-XXXXXXX">01-XXXXXXX</a><br>
+      Email: <a href="mailto:clinic@example.com">clinic@example.com</a><br>
+      Address: Street, City
+    </div>
+  </div>
+  <p style="margin-top:16px">Privacy: Your name, phone, email, and address are used only to fulfill your order. We don’t sell or share your data.</p>
 </footer>
 
+<!-- Cart FAB and Drawer -->
+<button id="fabCart" class="fab" onclick="openDrawer()">Cart • <span id="fabN">0</span></button>
+<aside id="drawer" class="drawer" aria-label="Cart">
+  <header class="wrap row">
+    <h3 style="margin:0">Your Cart</h3>
+    <div class="grow"></div>
+    <button class="btn secondary" onclick="closeDrawer()">Close</button>
+  </header>
+  <div class="body">
+    <div id="drawerBody"></div>
+  </div>
+  <div class="foot">
+    <button class="btn" style="flex:1" onclick="goCheckout()">Checkout</button>
+    <button class="btn secondary" style="flex:1" onclick="clearCart()">Clear</button>
+  </div>
+</aside>
+
+<div id="toast" class="toast">Added to cart</div>
+
 <script>
+/* ===== CONFIG ===== */
 const API = 'https://script.google.com/macros/s/AKfycbzzNZWZNol8M63BDYoEUKAwIWhbJ5d3p0nNj-txfokv0GQ6SALNjRb6X324ASzMfvKN/exec'; // ends with /exec
+const CURRENCY = 'NPR';
+
+/* ===== STATE ===== */
 let INVENTORY = [];
 const cart = new Map(); // sku -> {sku,name,price,qty}
 
-function money(n){ return 'NPR ' + Number(n).toFixed(2); }
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+/* ===== UTIL ===== */
+const money = n => `${CURRENCY} ${Number(n).toFixed(2)}`;
+const esc = s => String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1400); }
 
+/* ===== ROUTER ===== */
+function go(route){ location.hash = route; renderRoute(); }
+window.addEventListener('hashchange', renderRoute);
+function renderRoute(){
+  const r = location.hash || '#/shop';
+  show('shop', r==='#/shop');
+  show('checkout', r==='#/checkout');
+  show('confirm', r==='#/confirm');
+  if(r==='#/checkout') renderCheckout();
+}
+function show(id, v){ document.getElementById(id).style.display = v?'block':'none'; }
+
+/* ===== INVENTORY ===== */
 async function loadInventory(){
   const res = await fetch(API + '?action=inventory');
   INVENTORY = await res.json();
-  buildCategoryFilter(INVENTORY);
+  buildFilters(INVENTORY);
   renderProducts();
 }
-
-function buildCategoryFilter(items){
+function buildFilters(items){
   const sel = document.getElementById('category');
-  const cats = [...new Set(items.map(x => x.category).filter(Boolean))].sort();
-  cats.forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c;
+  sel.innerHTML = '';
+  const opts = ['All', ...[...new Set(items.map(x=>x.category).filter(Boolean))].sort()];
+  opts.forEach((name,i)=>{
+    const o = document.createElement('option');
+    o.value = i===0 ? '' : name;
+    o.textContent = name;
     sel.appendChild(o);
   });
 }
-
 function filteredInventory(){
   const cat = document.getElementById('category').value.trim().toLowerCase();
   const q = document.getElementById('search').value.trim().toLowerCase();
@@ -128,144 +216,154 @@ function filteredInventory(){
     return okCat && okQ;
   });
 }
-
 function renderProducts(){
   const box = document.getElementById('items');
   box.innerHTML = '';
-  filteredInventory().forEach(it=>{
-    const c = document.createElement('div'); c.className = 'card';
-    const out = Number(it.stock) <= 0;
+  const items = filteredInventory();
+  if(items.length===0){ box.innerHTML = '<p style="color:var(--muted)">No products match your filter.</p>'; return; }
+  items.forEach(it=>{
+    const out = Number(it.stock)<=0;
+    const c = document.createElement('div'); c.className='card';
     c.innerHTML = `
-      ${out ? '<div class="badge">Out of stock</div>' : ''}
-      <img class="item" src="${escapeHtml(it.image||'')}" alt="${escapeHtml(it.name)}" onerror="this.style.display='none'">
-      <div class="row"><b>${escapeHtml(it.name)}</b><span class="price">${money(it.price)}</span></div>
-      <div class="row muted"><span>SKU ${escapeHtml(it.sku)}</span><span>${escapeHtml(it.category||'')}</span></div>
+      ${out?'<div class="badge">Out of stock</div>':''}
+      <img class="img" loading="lazy" src="${esc(it.image||'')}" alt="${esc(it.name)}" onerror="this.style.display='none'">
+      <div class="row"><b>${esc(it.name)}</b><span class="price">${money(it.price)}</span></div>
+      <div class="row"><span class="sku">SKU ${esc(it.sku)}</span><span class="sku">${esc(it.category||'')}</span></div>
       <div class="row">
-        <input type="number" min="1" max="${it.stock}" value="1" id="q_${it.sku}" ${out?'disabled':''}>
-        <button data-sku="${it.sku}" ${out?'disabled':''}>Add</button>
+        <div class="stepper">
+          <button class="minus" data-sku="${it.sku}" ${out?'disabled':''}>−</button>
+          <input id="q_${it.sku}" type="number" value="1" min="1" max="${it.stock}" ${out?'disabled':''}>
+          <button class="plus" data-sku="${it.sku}" ${out?'disabled':''}>+</button>
+        </div>
+        <button class="btn add" data-sku="${it.sku}" ${out?'disabled':''}>Add to cart</button>
       </div>`;
-    c.querySelector('button')?.addEventListener('click', ()=>{
-      const q = Math.max(1, Math.min(Number(document.getElementById('q_'+it.sku).value||1), Number(it.stock)));
-      const prev = cart.get(it.sku)?.qty || 0;
-      cart.set(it.sku, { sku: it.sku, name: it.name, price: it.price, qty: prev + q });
-      renderCart();
-    });
+    c.querySelector('.minus')?.addEventListener('click',()=>step(it.sku,-1,it.stock));
+    c.querySelector('.plus')?.addEventListener('click',()=>step(it.sku,1,it.stock));
+    c.querySelector('.add')?.addEventListener('click',()=>addToCart(it));
     box.appendChild(c);
   });
 }
-
-function renderCart(){
-  const cartBox = document.getElementById('cartBox');
-  const pill = document.getElementById('cartPill');
-  const n = [...cart.values()].reduce((a,b)=>a+b.qty,0);
-  pill.style.display = n? 'inline-block':'none';
-  pill.textContent = `Cart • ${n}`;
-
-  if(cart.size === 0){
-    cartBox.style.display = 'none';
-    document.getElementById('cartTable').innerHTML = '';
-    return;
-  }
-  cartBox.style.display = 'block';
-  let rows = ''; let total = 0;
-  for(const item of cart.values()){
-    const line = item.qty * item.price; total += line;
-    rows += `
-      <tr>
-        <td>${escapeHtml(item.sku)}</td>
-        <td>${escapeHtml(item.name)}</td>
-        <td style="text-align:right">${money(item.price)}</td>
-        <td style="text-align:right"><input type="number" min="1" value="${item.qty}" data-sku="${item.sku}" class="qty"></td>
-        <td style="text-align:right">${money(line)}</td>
-        <td style="text-align:right"><button class="secondary rm" data-sku="${item.sku}">Remove</button></td>
-      </tr>`;
-  }
-  document.getElementById('cartTable').innerHTML = `
-    <table>
-      <thead><tr><th>SKU</th><th>Name</th><th>Price</th><th>Qty</th><th>Line</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr><td colspan="4" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td><td></td></tr></tfoot>
-    </table>`;
-  document.querySelectorAll('.qty').forEach(inp=>{
-    inp.onchange = () => {
-      const sku = inp.getAttribute('data-sku');
-      const it = cart.get(sku);
-      it.qty = Math.max(1, Number(inp.value||1));
-      cart.set(sku, it);
-      renderCart();
-    };
-  });
-  document.querySelectorAll('.rm').forEach(btn=>{
-    btn.onclick = () => { cart.delete(btn.getAttribute('data-sku')); renderCart(); };
-  });
+function step(sku,delta,max){
+  const el = document.getElementById('q_'+sku);
+  const v = Math.max(1, Math.min((Number(el.value)||1)+delta, Number(max)||999));
+  el.value = v;
+}
+function addToCart(it){
+  const q = Math.max(1, Number(document.getElementById('q_'+it.sku)?.value||1));
+  const prev = cart.get(it.sku)?.qty || 0;
+  cart.set(it.sku, { sku: it.sku, name: it.name, price: it.price, qty: prev+q });
+  syncCartBadges();
+  toast('Added to cart');
 }
 
+/* ===== CART UI ===== */
+function syncCartBadges(){
+  const n = [...cart.values()].reduce((a,b)=>a+b.qty,0);
+  const badge = document.getElementById('cartBadge');
+  const fab = document.getElementById('fabCart');
+  document.getElementById('cartCount').textContent = n;
+  document.getElementById('fabN').textContent = n;
+  badge.style.display = n? 'inline-block':'none';
+  fab.style.display = n? 'inline-block':'none';
+  renderDrawer();
+}
+function renderDrawer(){
+  const body = document.getElementById('drawerBody');
+  if(cart.size===0){ body.innerHTML = '<p style="color:var(--muted)">Your cart is empty.</p>'; return; }
+  let rows = '<table><thead><tr><th>SKU</th><th>Qty</th><th style="text-align:right">Line</th><th></th></tr></thead><tbody>';
+  let total = 0;
+  for(const it of cart.values()){
+    const line = it.qty*it.price; total+=line;
+    rows += `<tr>
+      <td>${esc(it.sku)}</td>
+      <td>
+        <input type="number" min="1" value="${it.qty}" data-sku="${esc(it.sku)}" class="qty" style="width:70px">
+      </td>
+      <td style="text-align:right">${money(line)}</td>
+      <td style="text-align:right"><button class="rm" data-sku="${esc(it.sku)}">Remove</button></td>
+    </tr>`;
+  }
+  rows += `</tbody><tfoot><tr><td colspan="2" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td><td></td></tr></tfoot></table>`;
+  body.innerHTML = rows;
+  body.querySelectorAll('.qty').forEach(inp=>{
+    inp.onchange = ()=>{ const s=inp.dataset.sku; const it=cart.get(s); it.qty=Math.max(1,Number(inp.value||1)); cart.set(s,it); syncCartBadges(); };
+  });
+  body.querySelectorAll('.rm').forEach(btn=>{
+    btn.onclick=()=>{ cart.delete(btn.dataset.sku); syncCartBadges(); };
+  });
+}
+function openDrawer(){ document.getElementById('drawer').classList.add('open'); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); }
+function clearCart(){ cart.clear(); syncCartBadges(); }
+
+/* ===== CHECKOUT ===== */
+function goCheckout(){
+  closeDrawer();
+  if(cart.size===0){ toast('Cart is empty'); return; }
+  go('#/checkout');
+}
+function renderCheckout(){
+  // summary
+  let rows = '<table><thead><tr><th>SKU</th><th>Name</th><th style="text-align:right">Qty</th><th style="text-align:right">Line</th></tr></thead><tbody>';
+  let total=0;
+  for(const it of cart.values()){
+    const line=it.qty*it.price; total+=line;
+    rows += `<tr><td>${esc(it.sku)}</td><td>${esc(it.name)}</td><td style="text-align:right">${it.qty}</td><td style="text-align:right">${money(line)}</td></tr>`;
+  }
+  rows += `</tbody><tfoot><tr><td colspan="3" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td></tr></tfoot></table>`;
+  document.getElementById('summary').innerHTML = rows;
+}
 function validateForm(){
   const f = id => document.getElementById(id);
-  const fields = ['name','phone','email','addr'];
-  let ok = true;
-  fields.forEach(id => f(id).classList.remove('error'));
-  if(!/^\S+@\S+\.\S+$/.test(f('email').value.trim())){ f('email').classList.add('error'); ok=false; }
-  if(!/^[0-9+()\-\s]{8,}$/.test(f('phone').value.trim())){ f('phone').classList.add('error'); ok=false; }
-  if(!f('name').value.trim()){ f('name').classList.add('error'); ok=false; }
-  if(!f('addr').value.trim()){ f('addr').classList.add('error'); ok=false; }
-  return ok;
+  const errs = {name:!f('name').value.trim(), addr:!f('addr').value.trim(),
+                email:!/^\S+@\S+\.\S+$/.test(f('email').value.trim()),
+                phone:!/^[0-9+()\-\s]{8,}$/.test(f('phone').value.trim())};
+  ['name','addr','email','phone'].forEach(k=>{
+    f(k).classList.toggle('error', !!errs[k]);
+    document.getElementById('err_'+k)?.style.setProperty('display', errs[k]?'block':'none');
+  });
+  return !Object.values(errs).some(Boolean);
 }
-
 async function placeOrder(){
-  if(cart.size === 0) return;
+  if(cart.size===0){ toast('Cart is empty'); return; }
   if(!validateForm()) return;
 
   const customer = {
-    name: name.value.trim(),
-    phone: phone.value.trim(),
-    email: email.value.trim(),
-    address: addr.value.trim()
+    name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    address: document.getElementById('addr').value.trim(),
+    notes: document.getElementById('notes').value.trim() // optional; backend may ignore
   };
-  const items = [...cart.values()].map(i => ({ sku: i.sku, qty: i.qty }));
+  const items = [...cart.values()].map(i=>({sku:i.sku, qty:i.qty}));
 
   const res = await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'order', payload: { customer, items } })
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'order', payload:{ customer, items } })
   });
   const data = await res.json();
-  if(data?.ok){
-    // show confirmation page
-    const confirm = document.getElementById('confirm');
-    const msg = document.getElementById('confirmMsg');
-    const tbl = document.getElementById('confirmTable');
-    msg.textContent = `Order ${data.orderId} placed successfully. Total ${data.currency} ${Number(data.subtotal).toFixed(2)}.`;
-    // build table from current cart snapshot
-    let rows = ''; let total = 0;
-    for(const it of cart.values()){
-      const line = it.qty * it.price; total += line;
-      rows += `<tr><td>${escapeHtml(it.sku)}</td><td>${escapeHtml(it.name)}</td><td style="text-align:right">${it.qty}</td><td style="text-align:right">${money(line)}</td></tr>`;
-    }
-    tbl.innerHTML = `<table>
-      <thead><tr><th>SKU</th><th>Name</th><th>Qty</th><th>Line</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr><td colspan="3" style="text-align:right">Subtotal</td><td style="text-align:right">${money(total)}</td></tr></tfoot>
-    </table>`;
-    document.getElementById('cartBox').style.display = 'none';
-    document.getElementById('items').innerHTML = '';
-    document.getElementById('category').disabled = true;
-    document.getElementById('search').disabled = true;
-    confirm.classList.remove('hidden');
-    cart.clear();
-    document.getElementById('cartPill').style.display = 'none';
-  } else {
-    alert('Order failed: ' + (data?.error || 'Unknown error'));
-  }
+  if(!data?.ok){ alert('Order failed: ' + (data?.error||'Unknown error')); return; }
+
+  // confirmation
+  document.getElementById('confirmMsg').textContent =
+    `Order ${data.orderId} placed successfully. Total ${CURRENCY} ${Number(data.subtotal).toFixed(2)}.`;
+  // reuse checkout summary for confirm
+  document.getElementById('confirmTable').innerHTML = document.getElementById('summary').innerHTML;
+
+  cart.clear(); syncCartBadges();
+  // reset form
+  ['name','phone','email','addr','notes'].forEach(id=>document.getElementById(id).value='');
+  go('#/confirm');
 }
 
+/* ===== EVENTS ===== */
 document.getElementById('category').addEventListener('change', renderProducts);
 document.getElementById('search').addEventListener('input', renderProducts);
-document.getElementById('placeOrder').addEventListener('click', placeOrder);
-document.getElementById('clearCart').addEventListener('click', ()=>{ cart.clear(); renderCart(); });
-document.getElementById('newOrder').addEventListener('click', ()=>{ location.reload(); });
+document.getElementById('btnPlace').addEventListener('click', placeOrder);
 
-loadInventory();
+/* ===== INIT ===== */
+loadInventory().then(()=>{ go('#/shop'); });
 </script>
 </body>
 </html>
